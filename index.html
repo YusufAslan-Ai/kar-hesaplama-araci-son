@@ -1,0 +1,2495 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kar Hedefli Satış Fiyatı Hesaplama Aracı</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e6ed;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .card-title {
+            color: #3498db;
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title i {
+            font-size: 24px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #7f8c8d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #3498db;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .platform-selection {
+            margin-bottom: 30px;
+        }
+        
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .platform-card {
+            background: white;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .platform-card:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .platform-card.selected {
+            border-color: #2ecc71;
+            background-color: #f0f9f0;
+        }
+        
+        .platform-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+        
+        .platform-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .platform-fee {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 2px;
+        }
+        
+        .platform-fee-highlight {
+            color: #e74c3c;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background-color: #f8fafc;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            background-color: #eef5fd;
+        }
+        
+        .upload-area i {
+            font-size: 48px;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .upload-area h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .upload-area p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .btn-file {
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-file:hover {
+            background-color: #2980b9;
+        }
+        
+        .selected-file {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e8f4fd;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        
+        .column-mapping {
+            margin-top: 30px;
+        }
+        
+        .mapping-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .mapping-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .mapping-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .required-field::after {
+            content: " *";
+            color: #e74c3c;
+        }
+        
+        select, input {
+            padding: 12px 15px;
+            border: 1px solid #dce4ec;
+            border-radius: 6px;
+            font-size: 15px;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        input[type="number"], input[type="text"] {
+            cursor: text;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .optional-section {
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #f39c12;
+        }
+        
+        .optional-title {
+            font-weight: 600;
+            color: #f39c12;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            max-height: 400px;
+            overflow-y: auto;
+            display: block;
+        }
+        
+        .preview-table thead {
+            background-color: #3498db;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        
+        .preview-table th {
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .preview-table td {
+            padding: 12px;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .preview-table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        
+        .preview-table tbody tr:hover {
+            background-color: #f1f7fd;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #d68910;
+            transform: translateY(-2px);
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .results-table thead {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .results-table th {
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+        }
+        
+        .results-table td {
+            padding: 14px 12px;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .results-table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        
+        .results-table tbody tr:hover {
+            background-color: #f1f7fd;
+        }
+        
+        .profit-positive {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .profit-negative {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        .profit-neutral {
+            color: #f39c12;
+            font-weight: 600;
+        }
+        
+        .result-highlight {
+            font-weight: 700;
+            font-size: 15px;
+        }
+        
+        .manual-input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        
+        .product-card {
+            position: relative;
+            border-left: 4px solid #3498db;
+            margin-bottom: 20px;
+        }
+        
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .product-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #3498db;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #3498db;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 14px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e6ed;
+        }
+        
+        .validation-error {
+            border-color: #e74c3c !important;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .platform-info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .platform-info-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .platform-info-icon {
+            font-size: 40px;
+        }
+        
+        .platform-info-title {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .platform-info-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .platform-info-item {
+            text-align: center;
+        }
+        
+        .platform-info-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .platform-info-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .price-result-card {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .price-result-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        
+        .price-result-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .price-result-subtitle {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+        
+        .cost-breakdown {
+            margin-top: 20px;
+        }
+        
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cost-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cost-label {
+            font-weight: 600;
+        }
+        
+        .cost-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .cost-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+        
+        .type-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .type-option {
+            padding: 5px 10px;
+            background: #f1f7fd;
+            border: 1px solid #dce4ec;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        
+        .type-option.selected {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .platform-fee-section {
+            background-color: #f0f9f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .platform-fee-title {
+            font-weight: 600;
+            color: #2ecc71;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-box {
+            background-color: #f0f7ff;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+        
+        .info-box-title {
+            font-weight: 600;
+            color: #3498db;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .manual-input-grid, .mapping-grid, .platform-grid, .stats {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                width: 100%;
+                text-align: left;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                        justify-content: center;
+            }
+            
+            .export-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-calculator"></i> Kar Hedefli Satış Fiyatı Hesaplama Aracı</h1>
+            <p class="subtitle">Maliyet ve hedef kar oranına göre optimal satış fiyatı hesaplama</p>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('platform-tab')">
+                <i class="fas fa-store"></i> Platform Seç
+            </button>
+            <button class="tab" onclick="switchTab('excel-tab')">
+                <i class="fas fa-file-excel"></i> Excel Yükle
+            </button>
+            <button class="tab" onclick="switchTab('manual-tab')">
+                <i class="fas fa-edit"></i> Manuel Giriş
+            </button>
+            <button class="tab" onclick="switchTab('results-tab')">
+                <i class="fas fa-chart-line"></i> Sonuçlar
+            </button>
+        </div>
+        
+        <!-- Platform Seçim Sekmesi -->
+        <div id="platform-tab" class="tab-content active">
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-store"></i> Platform Seçimi</h3>
+                <p>Lütfen ürünlerinizi satacağınız platformu seçin. Sipariş başına platform ücreti otomatik olarak uygulanacaktır.</p>
+                
+                <div class="platform-selection">
+                    <div class="platform-grid" id="platformGrid">
+                        <!-- Platform kartları buraya eklenecek -->
+                    </div>
+                </div>
+                
+                <div id="selectedPlatformInfo" style="display: none;">
+                    <div class="platform-info-card">
+                        <div class="platform-info-header">
+                            <div class="platform-info-icon">
+                                <i id="selectedPlatformIcon"></i>
+                            </div>
+                            <div>
+                                <div class="platform-info-title" id="selectedPlatformName">Platform Adı</div>
+                                <div style="font-size: 14px; opacity: 0.9;">Seçilen Pazaryeri</div>
+                            </div>
+                        </div>
+                        <div class="platform-info-details">
+                            <div class="platform-info-item">
+                                <div class="platform-info-value" id="selectedPlatformFee">0 ₺</div>
+                                <div class="platform-info-label">Sipariş Başına Ücret</div>
+                            </div>
+                            <div class="platform-info-item">
+                                <div class="platform-info-value" id="selectedPlatformCommission">0%</div>
+                                <div class="platform-info-label">Komisyon Oranı</div>
+                            </div>
+                            <div class="platform-info-item">
+                                <div class="platform-info-value">%2,5</div>
+                                <div class="platform-info-label">Ödeme/Hizmet Ücreti</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn-primary" onclick="continueToExcel()">
+                        <i class="fas fa-arrow-right"></i> Excel Yüklemeye Devam Et
+                    </button>
+                    <button class="btn-secondary" onclick="continueToManual()">
+                        <i class="fas fa-arrow-right"></i> Manuel Girişe Devam Et
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Excel Yükleme Sekmesi -->
+        <div id="excel-tab" class="tab-content">
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-cloud-upload-alt"></i> Excel Dosyasını Yükleyin</h3>
+                <div id="platformInfoExcel"></div>
+                
+                <!-- Sabit Ücret Bilgisi -->
+                <div class="info-box">
+                    <div class="info-box-title">
+                        <i class="fas fa-info-circle"></i> Sabit Ücret Bilgisi
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px;">
+                        <div>
+                            <div style="font-size: 13px; color: #7f8c8d;">Sipariş Başına Sabit Ücret</div>
+                            <div style="font-size: 18px; font-weight: 700; color: #e74c3c;" id="excelFixedFee">0 ₺</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 13px; color: #7f8c8d;">Ödeme/Hizmet Ücreti</div>
+                            <div style="font-size: 18px; font-weight: 700; color: #e74c3c;">%2,5</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 13px; color: #7f8c8d;">
+                        <i class="fas fa-lightbulb"></i> Ödeme/Hizmet ücreti tüm hesaplamalarda sabit olarak %2,5 olarak uygulanacaktır.
+                    </div>
+                </div>
+                
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-file-excel"></i>
+                    <h3>Excel Dosyasını Sürükleyip Bırakın veya Seçin</h3>
+                    <p>Desteklenen formatlar: .xlsx, .xls, .csv</p>
+                    <div class="file-input-wrapper">
+                        <button class="btn-file">
+                            <i class="fas fa-folder-open"></i> Dosya Seç
+                        </button>
+                        <input type="file" id="excelFile" class="file-input" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event)">
+                    </div>
+                    <div id="selectedFileInfo" class="selected-file" style="display: none;">
+                        <i class="fas fa-check-circle" style="color: #2ecc71;"></i>
+                        <span id="fileName"></span>
+                        <button class="btn-danger" onclick="clearFile()" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;">
+                            <i class="fas fa-times"></i> Kaldır
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="columnMappingSection" class="column-mapping" style="display: none;">
+                    <h3 class="card-title"><i class="fas fa-columns"></i> Sütun Eşleştirme</h3>
+                    <p>Excel dosyanızdaki sütunları aşağıdaki alanlarla eşleştirin:</p>
+                    
+                    <div class="mapping-grid" id="mappingContainer">
+                        <!-- Zorunlu alanlar -->
+                        <!-- İsteğe bağlı alanlar -->
+                    </div>
+                    
+                    <div class="buttons">
+                        <button class="btn-primary" onclick="applyMapping()">
+                            <i class="fas fa-check"></i> Eşleştirmeyi Uygula ve Verileri Yükle
+                        </button>
+                        <button class="btn-secondary" onclick="autoDetectColumns()">
+                            <i class="fas fa-magic"></i> Otomatik Tespit Et
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="dataPreview" style="display: none; margin-top: 30px;">
+                    <h3 class="card-title"><i class="fas fa-eye"></i> Veri Önizleme (İlk 10 Satır)</h3>
+                    <div class="preview-table-container">
+                        <table class="preview-table" id="previewTable">
+                            <thead id="previewTableHeader">
+                                <!-- Tablo başlıkları buraya eklenecek -->
+                            </thead>
+                            <tbody id="previewTableBody">
+                                <!-- Tablo verileri buraya eklenecek -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button class="btn-success" onclick="calculateFromExcel()">
+                            <i class="fas fa-calculator"></i> Excel Verilerini Hesapla
+                        </button>
+                        <button class="btn-secondary" onclick="addToManualInput()">
+                            <i class="fas fa-plus"></i> Manuel Girişe Aktar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Manuel Giriş Sekmesi -->
+        <div id="manual-tab" class="tab-content">
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-edit"></i> Manuel Ürün Girişi</h3>
+                <div id="platformInfoManual"></div>
+                
+                <!-- Sabit Ücret Bilgisi -->
+                <div class="info-box">
+                    <div class="info-box-title">
+                        <i class="fas fa-info-circle"></i> Sabit Ücret Bilgisi
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px;">
+                        <div>
+                            <div style="font-size: 13px; color: #7f8c8d;">Sipariş Başına Sabit Ücret</div>
+                            <div style="font-size: 18px; font-weight: 700; color: #e74c3c;" id="manualFixedFee">0 ₺</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 13px; color: #7f8c8d;">Ödeme/Hizmet Ücreti</div>
+                            <div style="font-size: 18px; font-weight: 700; color: #e74c3c;">%2,5</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 13px; color: #7f8c8d;">
+                        <i class="fas fa-lightbulb"></i> Ödeme/Hizmet ücreti tüm hesaplamalarda sabit olarak %2,5 olarak uygulanacaktır.
+                    </div>
+                </div>
+                
+                <div id="manualProductsContainer">
+                    <!-- Manuel ürünler buraya eklenecek -->
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn-success" onclick="addManualProduct()">
+                        <i class="fas fa-plus"></i> Yeni Ürün Ekle
+                    </button>
+                    <button class="btn-primary" onclick="calculateManualProducts()">
+                        <i class="fas fa-calculator"></i> Manuel Ürünleri Hesapla
+                    </button>
+                    <button class="btn-secondary" onclick="loadExampleData()">
+                        <i class="fas fa-file-alt"></i> Örnek Verileri Yükle
+                    </button>
+                    <button class="btn-danger" onclick="clearManualProducts()">
+                        <i class="fas fa-trash"></i> Tümünü Temizle
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sonuçlar Sekmesi -->
+        <div id="results-tab" class="tab-content">
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-chart-line"></i> Hesaplama Sonuçları</h3>
+                
+                <div class="stats" id="resultsStats">
+                    <!-- İstatistikler buraya eklenecek -->
+                </div>
+                
+                <div id="resultsContainer">
+                    <!-- Hesaplama sonuçları buraya eklenecek -->
+                </div>
+                
+                <div class="export-buttons">
+                    <button class="btn-success" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel"></i> Excel'e Aktar
+                    </button>
+                    <button class="btn-primary" onclick="exportToCSV()">
+                        <i class="fas fa-file-csv"></i> CSV'ye Aktar
+                    </button>
+                    <button class="btn-secondary" onclick="printResults()">
+                        <i class="fas fa-print"></i> Yazdır
+                    </button>
+                </div>
+                
+                <div style="overflow-x: auto; margin-top: 20px;">
+                    <table class="results-table" id="resultsTable">
+                        <thead id="resultsTableHeader">
+                            <!-- Sonuç tablosu başlıkları buraya eklenecek -->
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <!-- Sonuç tablosu verileri buraya eklenecek -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2026 Kar Hedefli Satış Fiyatı Hesaplama Aracı | Maliyet ve hedef kar oranına göre satış fiyatı belirleme</p>
+            <p style="margin-top: 5px; font-size: 13px;">Zorunlu alanlar: Ürün Adı, Ürün Maliyeti, Hedef Kar Oranı, Komisyon Oranı</p>
+            <p style="margin-top: 2px; font-size: 12px; color: #3498db;">Ödeme/Hizmet Ücreti: Sabit %2,5</p>
+        </footer>
+    </div>
+
+    <!-- SheetJS kütüphanesi (Excel işlemleri için) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <script>
+        // Global değişkenler
+        let excelData = [];
+        let excelColumns = [];
+        let manualProducts = [];
+        let calculationResults = [];
+        let currentMapping = {};
+        let selectedPlatform = null;
+        
+        // Sabit ödeme/hizmet ücreti oranı
+        const SABIT_ODEME_HIZMET_ORANI = 2.5;
+        
+        // Platform verileri (Sipariş başına ücretler)
+        const platforms = [
+            {
+                id: 'trendyol',
+                name: 'Trendyol',
+                icon: 'fas fa-shopping-bag',
+                fixedFee: 10.99,
+                color: '#ff6b35',
+                description: 'Türkiye\'nin en büyük e-ticaret platformu'
+            },
+            {
+                id: 'hepsiburada',
+                name: 'Hepsiburada',
+                icon: 'fas fa-box',
+                fixedFee: 12.5,
+                color: '#00b2a9',
+                description: 'Türkiye\'nin lider e-ticaret sitesi'
+            },
+            {
+                id: 'amazon',
+                name: 'Amazon TR',
+                icon: 'fab fa-amazon',
+                fixedFee: 15,
+                color: '#ff9900',
+                description: 'Dünyanın en büyük e-ticaret platformu'
+            },
+            {
+                id: 'n11',
+                name: 'n11',
+                icon: 'fas fa-shopping-cart',
+                fixedFee: 10,
+                color: '#6c5ce7',
+                description: 'Doğuş Grubu e-ticaret platformu'
+            },
+            {
+                id: 'ciceksepeti',
+                name: 'ÇiçekSepeti',
+                icon: 'fas fa-leaf',
+                fixedFee: 8,
+                color: '#00b894',
+                description: 'Türkiye\'nin çiçek ve hediye sitesi'
+            },
+            {
+                id: 'pazarama',
+                name: 'Pazarama',
+                icon: 'fas fa-store-alt',
+                fixedFee: 11,
+                color: '#9b59b6',
+                description: 'Yeni nesil e-ticaret platformu'
+            },
+            {
+                id: 'epttavm',
+                name: 'PTT AVm',
+                icon: 'fas fa-shipping-fast',
+                fixedFee: 9.5,
+                color: '#e84118',
+                description: 'PTT\'nin e-ticaret platformu'
+            },
+            {
+                id: 'gittigidiyor',
+                name: 'GittiGidiyor',
+                icon: 'fas fa-truck',
+                fixedFee: 9,
+                color: '#ff4757',
+                description: 'eBay Türkiye platformu'
+            },
+            {
+                id: 'custom',
+                name: 'Özel Platform',
+                icon: 'fas fa-cog',
+                fixedFee: 0,
+                color: '#636e72',
+                description: 'Özel platform ücretlerini manuel girin'
+            }
+        ];
+        
+        // Sayfa yüklendiğinde platformları yükle
+        window.onload = function() {
+            console.log("Sayfa yüklendi, platformlar yükleniyor...");
+            loadPlatforms();
+            addManualProduct();
+        };
+        
+        // Platformları yükle
+        function loadPlatforms() {
+            console.log("loadPlatforms fonksiyonu çalıştı");
+            const platformGrid = document.getElementById('platformGrid');
+            
+            if (!platformGrid) {
+                console.error("platformGrid elementi bulunamadı!");
+                return;
+            }
+            
+            console.log("Platform grid bulundu, platform sayısı:", platforms.length);
+            platformGrid.innerHTML = '';
+            
+            platforms.forEach(platform => {
+                console.log("Platform ekleniyor:", platform.name);
+                const platformCard = document.createElement('div');
+                platformCard.className = 'platform-card';
+                platformCard.dataset.id = platform.id;
+                platformCard.onclick = () => selectPlatform(platform.id);
+                
+                platformCard.innerHTML = `
+                    <div class="platform-icon">
+                        <i class="${platform.icon}"></i>
+                    </div>
+                    <div class="platform-name">${platform.name}</div>
+                    <div class="platform-fee-highlight">${platform.fixedFee} ₺/sipariş</div>
+                    <div class="platform-fee">Sabit Platform Ücreti</div>
+                `;
+                
+                platformGrid.appendChild(platformCard);
+            });
+            
+            console.log("Toplam platform kartı eklendi:", platformGrid.children.length);
+        }
+        
+        // Platform seç
+        function selectPlatform(platformId) {
+            console.log("Platform seçildi:", platformId);
+            
+            // Tüm platform kartlarından seçili sınıfını kaldır
+            document.querySelectorAll('.platform-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Seçilen platform kartına seçili sınıfını ekle
+            const selectedCard = document.querySelector(`.platform-card[data-id="${platformId}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+            
+            // Platform bilgilerini güncelle
+            selectedPlatform = platforms.find(p => p.id === platformId);
+            
+            if (selectedPlatform) {
+                console.log("Seçilen platform:", selectedPlatform.name);
+                
+                // Platform bilgilerini göster
+                document.getElementById('selectedPlatformName').textContent = selectedPlatform.name;
+                document.getElementById('selectedPlatformIcon').className = selectedPlatform.icon;
+                document.getElementById('selectedPlatformFee').textContent = selectedPlatform.fixedFee.toFixed(2) + ' ₺';
+                document.getElementById('selectedPlatformCommission').textContent = 'Excel\'den gelecek';
+                document.getElementById('selectedPlatformInfo').style.display = 'block';
+                
+                // Sabit ücret bilgilerini güncelle
+                updateFixedFeeInfo();
+                updatePlatformInfo();
+            }
+        }
+        
+        // Sabit ücret bilgilerini güncelle
+        function updateFixedFeeInfo() {
+            if (!selectedPlatform) return;
+            
+            document.getElementById('excelFixedFee').textContent = selectedPlatform.fixedFee.toFixed(2) + ' ₺';
+            document.getElementById('manualFixedFee').textContent = selectedPlatform.fixedFee.toFixed(2) + ' ₺';
+        }
+        
+        // Platform bilgilerini güncelle
+        function updatePlatformInfo() {
+            if (!selectedPlatform) return;
+            
+            const platformInfo = `
+                <div class="platform-info-card">
+                    <div class="platform-info-header">
+                        <div class="platform-info-icon">
+                            <i class="${selectedPlatform.icon}"></i>
+                        </div>
+                        <div>
+                            <div class="platform-info-title">${selectedPlatform.name}</div>
+                            <div style="font-size: 14px; opacity: 0.9;">${selectedPlatform.description}</div>
+                        </div>
+                    </div>
+                    <div class="platform-info-details">
+                        <div class="platform-info-item">
+                            <div class="platform-info-value">${selectedPlatform.fixedFee.toFixed(2)} ₺</div>
+                            <div class="platform-info-label">Sipariş Başına Ücret</div>
+                        </div>
+                        <div class="platform-info-item">
+                            <div class="platform-info-value">Excel'den</div>
+                            <div class="platform-info-label">Komisyon Oranı</div>
+                        </div>
+                        <div class="platform-info-item">
+                            <div class="platform-info-value">%2,5</div>
+                            <div class="platform-info-label">Ödeme/Hizmet Ücreti</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('platformInfoExcel').innerHTML = platformInfo;
+            document.getElementById('platformInfoManual').innerHTML = platformInfo;
+        }
+        
+        // Excel yüklemeye devam et
+        function continueToExcel() {
+            if (!selectedPlatform) {
+                alert('Lütfen önce bir platform seçin!');
+                return;
+            }
+            switchTab('excel-tab');
+        }
+        
+        // Manuel girişe devam et
+        function continueToManual() {
+            if (!selectedPlatform) {
+                alert('Lütfen önce bir platform seçin!');
+                return;
+            }
+            switchTab('manual-tab');
+        }
+        
+        // Excel dosyasını işle
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!selectedPlatform) {
+                alert('Lütfen önce bir platform seçin!');
+                clearFile();
+                return;
+            }
+            
+            document.getElementById('fileName').textContent = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+            document.getElementById('selectedFileInfo').style.display = 'inline-block';
+            
+            document.getElementById('uploadArea').style.borderColor = '#2ecc71';
+            document.getElementById('uploadArea').style.backgroundColor = '#f0f9f0';
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    if (jsonData.length === 0) {
+                        alert('Excel dosyası boş görünüyor!');
+                        return;
+                    }
+                    
+                    excelColumns = jsonData[0].map(col => col || `Sütun ${jsonData[0].indexOf(col) + 1}`);
+                    
+                    excelData = jsonData.slice(1).map(row => {
+                        const obj = {};
+                        excelColumns.forEach((col, index) => {
+                            obj[col] = row[index] !== undefined ? row[index] : '';
+                        });
+                        return obj;
+                    }).filter(row => Object.values(row).some(val => val !== '' && val !== null));
+                    
+                    document.getElementById('columnMappingSection').style.display = 'block';
+                    createColumnMapping();
+                    
+                } catch (error) {
+                    console.error('Excel okuma hatası:', error);
+                    alert('Excel dosyası okunurken bir hata oluştu! Lütfen dosya formatını kontrol edin.');
+                }
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+        
+        // Sütun eşleştirme alanlarını oluştur
+        function createColumnMapping() {
+            const mappingContainer = document.getElementById('mappingContainer');
+            mappingContainer.innerHTML = '';
+            
+            // ZORUNLU alanlar
+            const requiredFields = [
+                { id: 'sku', label: 'Ürün Adı', icon: 'fas fa-barcode', required: true },
+                { id: 'urunMaliyeti', label: 'Ürün Maliyeti (₺)', icon: 'fas fa-box', required: true },
+                { id: 'hedefKarOrani', label: 'Hedef Kar Oranı (%)', icon: 'fas fa-bullseye', required: true },
+                { id: 'komisyonOrani', label: 'Komisyon Oranı (%)', icon: 'fas fa-handshake', required: true }
+            ];
+            
+            // İSTEĞE BAĞLI alanlar
+            const optionalFields = [
+                { id: 'reklamMaliyeti', label: 'Reklam Maliyeti (₺)', icon: 'fas fa-ad', required: false },
+                { id: 'kuponIndirimi', label: 'Kupon İndirimi (₺)', icon: 'fas fa-ticket-alt', required: false },
+                { id: 'kampanyaIndirimi', label: 'Kampanya İndirimi', icon: 'fas fa-gift', required: false },
+                { id: 'kampanyaIndirimiTip', label: 'Kampanya Tipi', icon: 'fas fa-percent', required: false },
+                { id: 'indirim', label: 'İndirim (₺)', icon: 'fas fa-tag', required: false },
+                { id: 'kargoMaliyeti', label: 'Kargo Maliyeti (₺)', icon: 'fas fa-shipping-fast', required: false },
+                { id: 'kdvOrani', label: 'KDV Oranı (%)', icon: 'fas fa-receipt', required: false }
+            ];
+            
+            // Zorunlu alanları ekle
+            requiredFields.forEach(field => {
+                const mappingItem = document.createElement('div');
+                mappingItem.className = 'mapping-item';
+                
+                const label = document.createElement('div');
+                label.className = 'mapping-label required-field';
+                label.innerHTML = `<i class="${field.icon}"></i> ${field.label}`;
+                
+                const select = document.createElement('select');
+                select.id = `map-${field.id}`;
+                select.required = field.required;
+                select.innerHTML = `<option value="">-- Seçiniz --</option>`;
+                
+                excelColumns.forEach(column => {
+                    select.innerHTML += `<option value="${column}">${column}</option>`;
+                });
+                
+                mappingItem.appendChild(label);
+                mappingItem.appendChild(select);
+                mappingContainer.appendChild(mappingItem);
+                
+                autoMatchColumn(field.id, field.label);
+            });
+            
+            // Sabit Ödeme/Hizmet Ücreti Bilgisi
+            const paymentInfoSection = document.createElement('div');
+            paymentInfoSection.className = 'optional-section';
+            paymentInfoSection.style.gridColumn = '1 / -1';
+            paymentInfoSection.style.background = '#e8f4fd';
+            paymentInfoSection.style.borderLeftColor = '#3498db';
+            
+            const paymentInfoTitle = document.createElement('div');
+            paymentInfoTitle.className = 'optional-title';
+            paymentInfoTitle.innerHTML = `<i class="fas fa-credit-card"></i> Sabit Ücret Bilgisi`;
+            
+            const paymentInfoContent = document.createElement('div');
+            paymentInfoContent.style.marginTop = '10px';
+            paymentInfoContent.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 13px; color: #7f8c8d;">Sipariş Başına Sabit Ücret</div>
+                        <div style="font-size: 18px; font-weight: 700; color: #e74c3c;">${selectedPlatform ? selectedPlatform.fixedFee.toFixed(2) + ' ₺' : '0 ₺'}</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 13px; color: #7f8c8d;">Ödeme/Hizmet Ücreti</div>
+                        <div style="font-size: 18px; font-weight: 700; color: #e74c3c;">%2,5</div>
+                    </div>
+                </div>
+                <div style="margin-top: 10px; font-size: 13px; color: #7f8c8d;">
+                    <i class="fas fa-lightbulb"></i> Ödeme/Hizmet ücreti tüm hesaplamalarda sabit olarak %2,5 olarak uygulanacaktır. Komisyon oranını Excel'den girmelisiniz.
+                </div>
+            `;
+            
+            paymentInfoSection.appendChild(paymentInfoTitle);
+            paymentInfoSection.appendChild(paymentInfoContent);
+            mappingContainer.appendChild(paymentInfoSection);
+            
+            // İsteğe bağlı alanlar için bölüm
+            const optionalSection = document.createElement('div');
+            optionalSection.className = 'optional-section';
+            optionalSection.style.gridColumn = '1 / -1';
+            
+            const optionalTitle = document.createElement('div');
+            optionalTitle.className = 'optional-title';
+            optionalTitle.innerHTML = `<i class="fas fa-plus-circle"></i> İsteğe Bağlı Alanlar (Opsiyonel)`;
+            
+            optionalSection.appendChild(optionalTitle);
+            
+            const optionalGrid = document.createElement('div');
+            optionalGrid.className = 'mapping-grid';
+            
+            optionalFields.forEach(field => {
+                const mappingItem = document.createElement('div');
+                mappingItem.className = 'mapping-item';
+                
+                const label = document.createElement('div');
+                label.className = 'mapping-label';
+                label.innerHTML = `<i class="${field.icon}"></i> ${field.label}`;
+                
+                const select = document.createElement('select');
+                select.id = `map-${field.id}`;
+                select.innerHTML = `<option value="">-- Seçiniz (Opsiyonel) --</option>`;
+                
+                excelColumns.forEach(column => {
+                    select.innerHTML += `<option value="${column}">${column}</option>`;
+                });
+                
+                mappingItem.appendChild(label);
+                mappingItem.appendChild(select);
+                optionalGrid.appendChild(mappingItem);
+            });
+            
+            optionalSection.appendChild(optionalGrid);
+            mappingContainer.appendChild(optionalSection);
+        }
+        
+        // Otomatik sütun eşleştirme
+        function autoMatchColumn(fieldId, fieldLabel) {
+            const select = document.getElementById(`map-${fieldId}`);
+            const searchTerms = getSearchTermsForField(fieldId);
+            
+            for (let i = 0; i < excelColumns.length; i++) {
+                const column = excelColumns[i].toLowerCase();
+                
+                if (searchTerms.some(term => column.includes(term))) {
+                    select.value = excelColumns[i];
+                    break;
+                }
+            }
+        }
+        
+        // Alan ID'sine göre arama terimleri
+        function getSearchTermsForField(fieldId) {
+            const termMap = {
+                'sku': ['ürün', 'sku', 'ad', 'isim', 'product', 'name', 'code'],
+                'urunMaliyeti': ['maliyet', 'cost', 'ürün maliyet', 'alış', 'cogs'],
+                'hedefKarOrani': ['hedef', 'kar', 'profit', 'oran', 'margin', 'marj'],
+                'komisyonOrani': ['komisyon', 'commission', 'oran', 'rate'],
+                'reklamMaliyeti': ['reklam', 'advert', 'promotion', 'marketing'],
+                'kuponIndirimi': ['kupon', 'coupon', 'promo'],
+                'kampanyaIndirimi': ['kampanya', 'campaign', 'promotion'],
+                'kampanyaIndirimiTip': ['kampanya tip', 'tip', 'type'],
+                'indirim': ['indirim', 'discount'],
+                'kargoMaliyeti': ['kargo', 'shipping', 'nakliye', 'kargo maliyet', 'ship'],
+                'kdvOrani': ['kdv', 'tax', 'vergi', 'vat']
+            };
+            
+            return termMap[fieldId] || [fieldId.toLowerCase()];
+        }
+        
+        // Otomatik tespit et
+        function autoDetectColumns() {
+            const fields = ['sku', 'urunMaliyeti', 'hedefKarOrani', 'komisyonOrani',
+                          'reklamMaliyeti', 'kuponIndirimi', 'kampanyaIndirimi', 'kampanyaIndirimiTip', 
+                          'indirim', 'kargoMaliyeti', 'kdvOrani'];
+            
+            fields.forEach(field => {
+                const select = document.getElementById(`map-${field}`);
+                if (!select.value) {
+                    autoMatchColumn(field, field);
+                }
+            });
+            
+            alert('Otomatik sütun eşleştirme tamamlandı! Lütfen eşleştirmeleri kontrol edin.');
+        }
+        
+        // Eşleştirmeyi uygula
+        function applyMapping() {
+            const mapping = {};
+            const requiredFields = ['sku', 'urunMaliyeti', 'hedefKarOrani', 'komisyonOrani'];
+            
+            let missingFields = [];
+            requiredFields.forEach(field => {
+                const select = document.getElementById(`map-${field}`);
+                if (!select.value) {
+                    missingFields.push(field);
+                    select.classList.add('validation-error');
+                } else {
+                    select.classList.remove('validation-error');
+                    mapping[field] = select.value;
+                }
+            });
+            
+            const optionalFields = ['reklamMaliyeti', 'kuponIndirimi', 'kampanyaIndirimi', 
+                                  'kampanyaIndirimiTip', 'indirim', 'kargoMaliyeti', 'kdvOrani'];
+            optionalFields.forEach(field => {
+                const select = document.getElementById(`map-${field}`);
+                if (select.value) {
+                    mapping[field] = select.value;
+                }
+            });
+            
+            if (missingFields.length > 0) {
+                alert(`Lütfen tüm ZORUNLU alanları eşleştirin!\nEksik alanlar: ${missingFields.map(f => {
+                    const label = document.querySelector(`label[for="map-${f}"]`).textContent;
+                    return label;
+                }).join(', ')}`);
+                return;
+            }
+            
+            currentMapping = mapping;
+            showDataPreview();
+        }
+        
+        // Veri önizleme göster
+        function showDataPreview() {
+            document.getElementById('dataPreview').style.display = 'block';
+            
+            const tableHeader = document.getElementById('previewTableHeader');
+            const tableBody = document.getElementById('previewTableBody');
+            
+            tableHeader.innerHTML = '';
+            tableBody.innerHTML = '';
+            
+            const headerRow = document.createElement('tr');
+            Object.keys(currentMapping).forEach(key => {
+                const th = document.createElement('th');
+                th.textContent = currentMapping[key];
+                headerRow.appendChild(th);
+            });
+            tableHeader.appendChild(headerRow);
+            
+            const previewData = excelData.slice(0, 10);
+            previewData.forEach(row => {
+                const tableRow = document.createElement('tr');
+                Object.keys(currentMapping).forEach(key => {
+                    const td = document.createElement('td');
+                    const columnName = currentMapping[key];
+                    td.textContent = row[columnName] !== undefined ? row[columnName] : '';
+                    tableRow.appendChild(td);
+                });
+                tableBody.appendChild(tableRow);
+            });
+            
+            if (excelData.length > 10) {
+                const infoRow = document.createElement('tr');
+                const infoCell = document.createElement('td');
+                infoCell.colSpan = Object.keys(currentMapping).length;
+                infoCell.style.textAlign = 'center';
+                infoCell.style.fontStyle = 'italic';
+                infoCell.style.color = '#7f8c8d';
+                infoCell.textContent = `... ve ${excelData.length - 10} daha satır`;
+                infoRow.appendChild(infoCell);
+                tableBody.appendChild(infoRow);
+            }
+        }
+        
+        // Excel verilerini hesapla
+        function calculateFromExcel() {
+            if (!validateExcelData()) {
+                return;
+            }
+            
+            calculationResults = [];
+            
+            excelData.forEach((row, index) => {
+                const product = getProductFromRow(row);
+                const result = calculateProduct(product);
+                calculationResults.push(result);
+            });
+            
+            displayResults();
+            switchTab('results-tab');
+            
+            alert(`${excelData.length} ürün başarıyla hesaplandı!`);
+        }
+        
+        // Excel verilerini doğrula
+        function validateExcelData() {
+            let isValid = true;
+            let errorMessages = [];
+            
+            excelData.forEach((row, index) => {
+                const rowNumber = index + 2;
+                
+                const requiredFields = ['sku', 'urunMaliyeti', 'hedefKarOrani', 'komisyonOrani'];
+                
+                requiredFields.forEach(field => {
+                    const columnName = currentMapping[field];
+                    if (columnName) {
+                        const value = row[columnName];
+                        if (value === undefined || value === null || value === '') {
+                            isValid = false;
+                            errorMessages.push(`Satır ${rowNumber}: ${columnName} alanı boş olamaz`);
+                        } else if (field !== 'sku') {
+                            const numValue = parseFloat(value);
+                            if (isNaN(numValue) || numValue < 0) {
+                                isValid = false;
+                                errorMessages.push(`Satır ${rowNumber}: ${columnName} geçerli bir sayı olmalıdır`);
+                            } else if (['komisyonOrani', 'hedefKarOrani'].includes(field) && numValue > 100) {
+                                isValid = false;
+                                errorMessages.push(`Satır ${rowNumber}: ${columnName} 0-100 arası bir değer olmalıdır`);
+                            }
+                        }
+                    }
+                });
+            });
+            
+            if (!isValid) {
+                alert(`Hata! Lütfen aşağıdaki hataları düzeltin:\n\n${errorMessages.slice(0, 5).join('\n')}`);
+            }
+            
+            return isValid;
+        }
+        
+        // Satırdan ürün verilerini al
+        function getProductFromRow(row) {
+            const product = {};
+            
+            // Zorunlu alanlar
+            const requiredFields = ['sku', 'urunMaliyeti', 'hedefKarOrani', 'komisyonOrani'];
+            requiredFields.forEach(field => {
+                const columnName = currentMapping[field];
+                if (columnName) {
+                    let value = row[columnName];
+                    if (field === 'sku') {
+                        product[field] = value !== undefined ? value.toString() : '';
+                    } else {
+                        product[field] = parseFloat(value) || 0;
+                    }
+                }
+            });
+            
+            // İsteğe bağlı alanlar
+            const optionalFields = ['reklamMaliyeti', 'kuponIndirimi', 'kampanyaIndirimi', 
+                                  'kampanyaIndirimiTip', 'indirim', 'kargoMaliyeti', 'kdvOrani'];
+            optionalFields.forEach(field => {
+                const columnName = currentMapping[field];
+                if (columnName && row[columnName] !== undefined && row[columnName] !== '') {
+                    let value = row[columnName];
+                    if (field === 'kampanyaIndirimiTip') {
+                        product[field] = value.toString();
+                    } else {
+                        product[field] = parseFloat(value) || 0;
+                    }
+                } else {
+                    const defaults = {
+                        'reklamMaliyeti': 0,
+                        'kuponIndirimi': 0,
+                        'kampanyaIndirimi': 0,
+                        'kampanyaIndirimiTip': 'tl',
+                        'indirim': 0,
+                        'kargoMaliyeti': 0,
+                        'kdvOrani': 20
+                    };
+                    product[field] = defaults[field];
+                }
+            });
+            
+            // Sabit ücretleri ekle
+            product.platformSabitUcret = selectedPlatform ? selectedPlatform.fixedFee : 0;
+            product.odemeHizmetOrani = SABIT_ODEME_HIZMET_ORANI; // Sabit %2,5
+            
+            return product;
+        }
+        
+        // Manuel ürün ekle
+        function addManualProduct(productData = null) {
+            const container = document.getElementById('manualProductsContainer');
+            const productId = manualProducts.length + 1;
+            
+            const platformFee = selectedPlatform ? selectedPlatform.fixedFee : 0;
+            
+            const productCard = document.createElement('div');
+            productCard.className = 'card product-card';
+            productCard.id = `manual-product-${productId}`;
+            
+            productCard.innerHTML = `
+                <div class="product-header">
+                    <div class="product-number">Ürün ${productId}</div>
+                    <button class="btn-danger" onclick="removeManualProduct(${productId})">
+                        <i class="fas fa-trash"></i> Sil
+                    </button>
+                </div>
+                <div class="manual-input-grid">
+                    <!-- ZORUNLU ALANLAR -->
+                    <div class="input-group">
+                        <label class="required-field" for="manual-sku-${productId}">Ürün Adı</label>
+                        <input type="text" id="manual-sku-${productId}" placeholder="Ör: STL-001 Stiletto" value="${productData ? productData.sku : ''}" required>
+                        <div class="error-message" id="error-sku-${productId}">Bu alan zorunludur</div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="required-field" for="manual-urunMaliyeti-${productId}">Ürün Maliyeti (₺)</label>
+                        <input type="number" id="manual-urunMaliyeti-${productId}" step="0.01" placeholder="Ör: 380" value="${productData ? productData.urunMaliyeti : ''}" required min="0">
+                        <div class="error-message" id="error-urunMaliyeti-${productId}">Geçerli bir sayı girin</div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="required-field" for="manual-hedefKarOrani-${productId}">Hedef Kar Oranı (%)</label>
+                        <input type="number" id="manual-hedefKarOrani-${productId}" step="0.01" placeholder="Ör: 25" value="${productData ? productData.hedefKarOrani : 25}" required min="0">
+                        <div class="error-message" id="error-hedefKarOrani-${productId}">Geçerli bir sayı girin</div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="required-field" for="manual-komisyonOrani-${productId}">Komisyon Oranı (%)</label>
+                        <input type="number" id="manual-komisyonOrani-${productId}" step="0.01" placeholder="Ör: 15" value="${productData ? productData.komisyonOrani : 15}" required min="0" max="100">
+                        <div class="error-message" id="error-komisyonOrani-${productId}">0-100 arası bir değer girin</div>
+                    </div>
+                    
+                    <!-- ÖDEME/HİZMET ÜCRETİ (SABİT) -->
+                    <div class="input-group">
+                        <label for="manual-odemeHizmetOrani-${productId}">Ödeme/Hizmet Ücreti (%)</label>
+                        <input type="number" id="manual-odemeHizmetOrani-${productId}" step="0.01" value="2.5" readonly disabled style="background-color: #f5f5f5;">
+                        <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">
+                            <i class="fas fa-lock"></i> Bu değer sabittir (%2,5)
+                        </div>
+                    </div>
+                    
+                    <!-- İSTEĞE BAĞLI ALANLAR -->
+                    <div class="input-group">
+                        <label for="manual-reklamMaliyeti-${productId}">Reklam Maliyeti (₺)</label>
+                        <input type="number" id="manual-reklamMaliyeti-${productId}" step="0.01" placeholder="Opsiyonel" value="${productData ? productData.reklamMaliyeti : 0}" min="0">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="manual-kuponIndirimi-${productId}">Kupon İndirimi (₺)</label>
+                        <input type="number" id="manual-kuponIndirimi-${productId}" step="0.01" placeholder="Opsiyonel" value="${productData ? productData.kuponIndirimi : 0}" min="0">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="manual-kampanyaIndirimi-${productId}">Kampanya İndirimi</label>
+                        <input type="number" id="manual-kampanyaIndirimi-${productId}" step="0.01" placeholder="Opsiyonel" value="${productData ? productData.kampanyaIndirimi : 0}" min="0">
+                        <div class="type-selector">
+                            <div class="type-option ${productData && productData.kampanyaIndirimiTip === 'tl' ? 'selected' : 'selected'}" onclick="selectCampaignType(${productId}, 'tl')">TL</div>
+                            <div class="type-option ${productData && productData.kampanyaIndirimiTip === 'yuzde' ? 'selected' : ''}" onclick="selectCampaignType(${productId}, 'yuzde')">%</div>
+                        </div>
+                        <input type="hidden" id="manual-kampanyaIndirimiTip-${productId}" value="${productData ? productData.kampanyaIndirimiTip : 'tl'}">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="manual-indirim-${productId}">İndirim (₺)</label>
+                        <input type="number" id="manual-indirim-${productId}" step="0.01" placeholder="Opsiyonel" value="${productData ? productData.indirim : 0}" min="0">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="manual-kargoMaliyeti-${productId}">Kargo Maliyeti (₺)</label>
+                        <input type="number" id="manual-kargoMaliyeti-${productId}" step="0.01" placeholder="Opsiyonel" value="${productData ? productData.kargoMaliyeti : 0}" min="0">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="manual-kdvOrani-${productId}">KDV Oranı (%)</label>
+                        <input type="number" id="manual-kdvOrani-${productId}" step="0.01" placeholder="Opsiyonel" value="${productData ? productData.kdvOrani : 20}" min="0" max="100">
+                    </div>
+                </div>
+                
+                <!-- Platform Bilgileri -->
+                <div class="platform-fee-section">
+                    <div class="platform-fee-title">
+                        <i class="fas fa-info-circle"></i> Platform Sabit Ücreti
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="font-size: 16px; flex-grow: 1;">
+                            <strong>Sipariş Başına Sabit Ücret:</strong>
+                        </div>
+                        <div style="font-size: 18px; font-weight: 700; color: #e74c3c;">
+                            ${platformFee.toFixed(2)} ₺
+                        </div>
+                    </div>
+                    <div style="margin-top: 5px; font-size: 13px; color: #7f8c8d;">
+                        <i class="fas fa-lightbulb"></i> Bu ücret her satışta alınan sabit platform ücretidir. Seçilen platform: <strong>${selectedPlatform ? selectedPlatform.name : 'Platform Seçilmedi'}</strong>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(productCard);
+            
+            if (productData) {
+                manualProducts.push(productData);
+            } else {
+                manualProducts.push({
+                    sku: '',
+                    urunMaliyeti: 0,
+                    hedefKarOrani: 25,
+                    komisyonOrani: 15,
+                    odemeHizmetOrani: SABIT_ODEME_HIZMET_ORANI, // Sabit %2,5
+                    reklamMaliyeti: 0,
+                    kuponIndirimi: 0,
+                    kampanyaIndirimi: 0,
+                    kampanyaIndirimiTip: 'tl',
+                    indirim: 0,
+                    kargoMaliyeti: 0,
+                    kdvOrani: 20,
+                    platformSabitUcret: platformFee
+                });
+            }
+            
+            setupInputValidation(productId);
+        }
+        
+        // Kampanya tipi seç
+        function selectCampaignType(productId, type) {
+            const options = document.querySelectorAll(`#manual-product-${productId} .type-option`);
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            const selectedOption = document.querySelector(`#manual-product-${productId} .type-option:nth-child(${type === 'tl' ? 1 : 2})`);
+            selectedOption.classList.add('selected');
+            
+            document.getElementById(`manual-kampanyaIndirimiTip-${productId}`).value = type;
+        }
+        
+        // Input validasyonunu ayarla
+        function setupInputValidation(productId) {
+            const fields = ['sku', 'urunMaliyeti', 'hedefKarOrani', 'komisyonOrani'];
+            
+            fields.forEach(field => {
+                const input = document.getElementById(`manual-${field}-${productId}`);
+                const errorElement = document.getElementById(`error-${field}-${productId}`);
+                
+                input.addEventListener('input', function() {
+                    validateInput(this, field, productId);
+                });
+                
+                input.addEventListener('blur', function() {
+                    validateInput(this, field, productId);
+                });
+            });
+        }
+        
+        // Input validasyonu
+        function validateInput(input, field, productId) {
+            const errorElement = document.getElementById(`error-${field}-${productId}`);
+            let isValid = true;
+            let errorMessage = '';
+            
+            if (input.value.trim() === '') {
+                isValid = false;
+                errorMessage = 'Bu alan zorunludur';
+                input.classList.add('validation-error');
+            } else if (field !== 'sku') {
+                const value = parseFloat(input.value);
+                if (isNaN(value) || value < 0) {
+                    isValid = false;
+                    errorMessage = 'Geçerli bir sayı girin';
+                    input.classList.add('validation-error');
+                } else if (['komisyonOrani', 'hedefKarOrani'].includes(field) && value > 100) {
+                    isValid = false;
+                    errorMessage = '0-100 arası bir değer girin';
+                    input.classList.add('validation-error');
+                } else {
+                    input.classList.remove('validation-error');
+                }
+            } else {
+                input.classList.remove('validation-error');
+            }
+            
+            errorElement.style.display = isValid ? 'none' : 'block';
+            errorElement.textContent = errorMessage;
+            
+            return isValid;
+        }
+        
+        // Manuel ürün sil
+        function removeManualProduct(productId) {
+            const productCard = document.getElementById(`manual-product-${productId}`);
+            if (productCard) {
+                productCard.remove();
+                manualProducts.splice(productId - 1, 1);
+                
+                const productCards = document.querySelectorAll('.product-card');
+                productCards.forEach((card, index) => {
+                    const header = card.querySelector('.product-number');
+                    if (header) {
+                        header.textContent = `Ürün ${index + 1}`;
+                    }
+                });
+            }
+        }
+        
+        // Manuel ürünleri hesapla
+        function calculateManualProducts() {
+            if (!validateManualProducts()) {
+                return;
+            }
+            
+            calculationResults = [];
+            
+            const productCards = document.querySelectorAll('[id^="manual-product-"]');
+            
+            productCards.forEach((card, index) => {
+                const productId = index + 1;
+                const product = getManualProductData(productId);
+                
+                const result = calculateProduct(product);
+                calculationResults.push(result);
+            });
+            
+            displayResults();
+            switchTab('results-tab');
+            
+            alert(`${productCards.length} ürün başarıyla hesaplandı!`);
+        }
+        
+        // Manuel ürün verilerini doğrula
+        function validateManualProducts() {
+            let isValid = true;
+            let errorMessages = [];
+            
+            const productCards = document.querySelectorAll('[id^="manual-product-"]');
+            
+            productCards.forEach((card, index) => {
+                const productId = index + 1;
+                const fields = ['sku', 'urunMaliyeti', 'hedefKarOrani', 'komisyonOrani'];
+                
+                fields.forEach(field => {
+                    const input = document.getElementById(`manual-${field}-${productId}`);
+                    if (!validateInput(input, field, productId)) {
+                        isValid = false;
+                        errorMessages.push(`Ürün ${productId}: ${input.previousElementSibling.textContent.replace(' *', '')} alanı hatalı`);
+                    }
+                });
+            });
+            
+            if (!isValid) {
+                alert(`Hata! Lütfen aşağıdaki hataları düzeltin:\n\n${errorMessages.slice(0, 5).join('\n')}`);
+            }
+            
+            return isValid;
+        }
+        
+        // Manuel ürün verilerini al
+        function getManualProductData(productId) {
+            return {
+                sku: document.getElementById(`manual-sku-${productId}`).value,
+                urunMaliyeti: parseFloat(document.getElementById(`manual-urunMaliyeti-${productId}`).value) || 0,
+                hedefKarOrani: parseFloat(document.getElementById(`manual-hedefKarOrani-${productId}`).value) || 0,
+                komisyonOrani: parseFloat(document.getElementById(`manual-komisyonOrani-${productId}`).value) || 0,
+                odemeHizmetOrani: SABIT_ODEME_HIZMET_ORANI, // Sabit %2,5
+                reklamMaliyeti: parseFloat(document.getElementById(`manual-reklamMaliyeti-${productId}`).value) || 0,
+                kuponIndirimi: parseFloat(document.getElementById(`manual-kuponIndirimi-${productId}`).value) || 0,
+                kampanyaIndirimi: parseFloat(document.getElementById(`manual-kampanyaIndirimi-${productId}`).value) || 0,
+                kampanyaIndirimiTip: document.getElementById(`manual-kampanyaIndirimiTip-${productId}`).value,
+                indirim: parseFloat(document.getElementById(`manual-indirim-${productId}`).value) || 0,
+                kargoMaliyeti: parseFloat(document.getElementById(`manual-kargoMaliyeti-${productId}`).value) || 0,
+                kdvOrani: parseFloat(document.getElementById(`manual-kdvOrani-${productId}`).value) || 20,
+                platformSabitUcret: selectedPlatform ? selectedPlatform.fixedFee : 0
+            };
+        }
+        
+        // Ürün hesaplaması yap
+        function calculateProduct(product) {
+            // Toplam maliyet hesapla
+            let toplamMaliyet = product.urunMaliyeti + product.reklamMaliyeti + product.kargoMaliyeti;
+            
+            // Hedef kar miktarı
+            const hedefKarMiktari = toplamMaliyet * (product.hedefKarOrani / 100);
+            
+            // Başabaş noktası için hesaplama (kar = 0)
+            const breakEvenPrice = calculateBreakEvenPrice(product);
+            
+            // Hedef kar oranına göre satış fiyatı
+            const targetPrice = calculateTargetPrice(product, hedefKarMiktari);
+            
+            // KDV dahil satış fiyatı
+            const kdvDahilFiyat = targetPrice * (1 + product.kdvOrani / 100);
+            
+            // Platform maliyetleri
+            const platformKomisyon = targetPrice * (product.komisyonOrani / 100);
+            const odemeHizmet = targetPrice * (product.odemeHizmetOrani / 100);
+            
+            // Toplam platform maliyeti
+            const toplamPlatformMaliyeti = platformKomisyon + odemeHizmet + product.platformSabitUcret;
+            
+            // Net kar
+            const netKar = targetPrice - toplamMaliyet - toplamPlatformMaliyeti;
+            
+            // Gerçek kar oranı
+            const gercekKarOrani = toplamMaliyet > 0 ? (netKar / toplamMaliyet) * 100 : 0;
+            
+            return {
+                sku: product.sku || `Ürün-${Math.random().toString(36).substr(2, 5)}`,
+                urunMaliyeti: product.urunMaliyeti.toFixed(2),
+                reklamMaliyeti: product.reklamMaliyeti.toFixed(2),
+                kargoMaliyeti: product.kargoMaliyeti.toFixed(2),
+                toplamMaliyet: toplamMaliyet.toFixed(2),
+                hedefKarOrani: product.hedefKarOrani.toFixed(2),
+                hedefKarMiktari: hedefKarMiktari.toFixed(2),
+                breakEvenPrice: breakEvenPrice.toFixed(2),
+                targetPrice: targetPrice.toFixed(2),
+                kdvDahilFiyat: kdvDahilFiyat.toFixed(2),
+                komisyonOrani: product.komisyonOrani.toFixed(2),
+                odemeHizmetOrani: product.odemeHizmetOrani.toFixed(2),
+                platformKomisyon: platformKomisyon.toFixed(2),
+                odemeHizmet: odemeHizmet.toFixed(2),
+                platformSabitUcret: product.platformSabitUcret.toFixed(2),
+                toplamPlatformMaliyeti: toplamPlatformMaliyeti.toFixed(2),
+                netKar: netKar.toFixed(2),
+                gercekKarOrani: gercekKarOrani.toFixed(2),
+                kampanyaIndirimi: product.kampanyaIndirimi.toFixed(2),
+                kampanyaIndirimiTip: product.kampanyaIndirimiTip,
+                kuponIndirimi: product.kuponIndirimi.toFixed(2),
+                indirim: product.indirim.toFixed(2),
+                kdvOrani: product.kdvOrani.toFixed(2)
+            };
+        }
+        
+        // Başabaş satış fiyatı hesapla
+        function calculateBreakEvenPrice(product) {
+            // Toplam maliyet
+            const toplamMaliyet = product.urunMaliyeti + product.reklamMaliyeti + product.kargoMaliyeti;
+            
+            // Denklem: x = toplamMaliyet + (x * (product.komisyonOrani/100)) + (x * (product.odemeHizmetOrani/100)) + product.platformSabitUcret
+            // x - (x * komisyon) - (x * odemeHizmet) = toplamMaliyet + platformSabitUcret
+            // x * (1 - komisyonOrani/100 - odemeHizmetOrani/100) = toplamMaliyet + platformSabitUcret
+            // x = (toplamMaliyet + platformSabitUcret) / (1 - komisyonOrani/100 - odemeHizmetOrani/100)
+            
+            const payda = 1 - (product.komisyonOrani / 100) - (product.odemeHizmetOrani / 100);
+            
+            if (payda <= 0) {
+                return toplamMaliyet + product.platformSabitUcret; // Minimum fiyat
+            }
+            
+            return (toplamMaliyet + product.platformSabitUcret) / payda;
+        }
+        
+        // Hedef kar oranına göre satış fiyatı hesapla
+        function calculateTargetPrice(product, hedefKarMiktari) {
+            // Toplam maliyet
+            const toplamMaliyet = product.urunMaliyeti + product.reklamMaliyeti + product.kargoMaliyeti;
+            
+            // Toplam hedef gelir = toplamMaliyet + hedefKarMiktari
+            const toplamHedefGelir = toplamMaliyet + hedefKarMiktari;
+            
+            // Denklem: x = toplamHedefGelir + (x * (product.komisyonOrani/100)) + (x * (product.odemeHizmetOrani/100)) + product.platformSabitUcret
+            // x - (x * komisyon) - (x * odemeHizmet) = toplamHedefGelir + platformSabitUcret
+            // x * (1 - komisyonOrani/100 - odemeHizmetOrani/100) = toplamHedefGelir + platformSabitUcret
+            // x = (toplamHedefGelir + platformSabitUcret) / (1 - komisyonOrani/100 - odemeHizmetOrani/100)
+            
+            const payda = 1 - (product.komisyonOrani / 100) - (product.odemeHizmetOrani / 100);
+            
+            if (payda <= 0) {
+                return toplamHedefGelir + product.platformSabitUcret; // Minimum fiyat
+            }
+            
+            let fiyat = (toplamHedefGelir + product.platformSabitUcret) / payda;
+            
+            // Kampanya indirimi uygula
+            if (product.kampanyaIndirimi > 0) {
+                if (product.kampanyaIndirimiTip === 'yuzde') {
+                    fiyat = fiyat / (1 - product.kampanyaIndirimi / 100);
+                } else {
+                    fiyat = fiyat + product.kampanyaIndirimi;
+                }
+            }
+            
+            // Kupon indirimi uygula
+            if (product.kuponIndirimi > 0) {
+                fiyat = fiyat + product.kuponIndirimi;
+            }
+            
+            // İndirim uygula
+            if (product.indirim > 0) {
+                fiyat = fiyat + product.indirim;
+            }
+            
+            return fiyat;
+        }
+        
+        // Sonuçları göster
+        function displayResults() {
+            if (calculationResults.length === 0) {
+                alert("Hesaplanacak veri bulunamadı!");
+                return;
+            }
+            
+            // İstatistikleri hesapla
+            calculateStats();
+            
+            // Sonuç kartlarını oluştur
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.innerHTML = '';
+            
+            calculationResults.forEach((result, index) => {
+                const resultCard = document.createElement('div');
+                resultCard.className = 'card';
+                resultCard.style.borderLeft = '4px solid #3498db';
+                resultCard.style.marginBottom = '20px';
+                
+                resultCard.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 style="color: #2c3e50; font-size: 18px;"><i class="fas fa-box"></i> ${result.sku}</h4>
+                        <span style="background-color: #3498db; color: white; padding: 5px 10px; border-radius: 4px; font-size: 14px;">
+                            Ürün ${index + 1}
+                        </span>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <!-- Hedef Kar Fiyatı -->
+                        <div class="price-result-card" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);">
+                            <div class="price-result-title">Hedef Kar Oranı İçin Satış Fiyatı</div>
+                            <div class="price-result-value">${result.targetPrice} ₺</div>
+                            <div class="price-result-subtitle">KDV Hariç</div>
+                            <div style="margin-top: 10px; font-size: 16px;">
+                                KDV Dahil: <strong>${result.kdvDahilFiyat} ₺</strong>
+                            </div>
+                        </div>
+                        
+                        <!-- Başabaş Fiyatı -->
+                        <div class="price-result-card" style="background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);">
+                            <div class="price-result-title">Başabaş Satış Fiyatı (Kar = 0)</div>
+                            <div class="price-result-value">${result.breakEvenPrice} ₺</div>
+                            <div class="price-result-subtitle">Minimum satış fiyatı</div>
+                            <div style="margin-top: 10px; font-size: 14px; opacity: 0.9;">
+                                Bu fiyattan satışta ne kar ne zarar edersiniz
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Platform Oranları -->
+                    <div style="margin-top: 15px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 13px; color: #7f8c8d;">Komisyon Oranı</div>
+                            <div style="font-size: 18px; font-weight: 700; color: #e74c3c;">${result.komisyonOrani}%</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 13px; color: #7f8c8d;">Ödeme/Hizmet Ücreti</div>
+                            <div style="font-size: 18px; font-weight: 700; color: #e74c3c;">%2,5</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 13px; color: #7f8c8d;">Sabit Platform Ücreti</div>
+                            <div style="font-size: 18px; font-weight: 700; color: #e74c3c;">${result.platformSabitUcret} ₺</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Maliyet Dağılımı -->
+                    <div class="cost-breakdown" style="margin-top: 20px;">
+                        <h5 style="margin-bottom: 15px; color: #2c3e50;"><i class="fas fa-chart-pie"></i> Maliyet Dağılımı</h5>
+                        
+                        <div class="cost-item">
+                            <div class="cost-label">Ürün Maliyeti</div>
+                            <div class="cost-value">${result.urunMaliyeti} ₺</div>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <div class="cost-label">Reklam Maliyeti</div>
+                            <div class="cost-value">${result.reklamMaliyeti} ₺</div>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <div class="cost-label">Kargo Maliyeti</div>
+                            <div class="cost-value">${result.kargoMaliyeti} ₺</div>
+                        </div>
+                        
+                        <div class="cost-item" style="border-top: 2px solid #ddd; padding-top: 15px;">
+                            <div class="cost-label"><strong>Toplam Maliyet</strong></div>
+                            <div class="cost-value cost-total">${result.toplamMaliyet} ₺</div>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <div class="cost-label">Platform Komisyonu (${result.komisyonOrani}%)</div>
+                            <div class="cost-value">${result.platformKomisyon} ₺</div>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <div class="cost-label">Ödeme Hizmet Ücreti (%2,5)</div>
+                            <div class="cost-value">${result.odemeHizmet} ₺</div>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <div class="cost-label">Platform Sabit Ücreti</div>
+                            <div class="cost-value">${result.platformSabitUcret} ₺</div>
+                        </div>
+                        
+                        <div class="cost-item" style="border-top: 2px solid #ddd; padding-top: 15px;">
+                            <div class="cost-label"><strong>Toplam Platform Maliyeti</strong></div>
+                            <div class="cost-value cost-total">${result.toplamPlatformMaliyeti} ₺</div>
+                        </div>
+                        
+                        <div class="cost-item" style="background-color: #f8f9fa; padding: 15px; border-radius: 6px; margin-top: 10px;">
+                            <div class="cost-label"><strong>Net Kar</strong></div>
+                            <div class="cost-value" style="color: ${parseFloat(result.netKar) >= 0 ? '#27ae60' : '#e74c3c'}; font-size: 18px;">
+                                ${result.netKar} ₺ (${result.gercekKarOrani}%)
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                resultsContainer.appendChild(resultCard);
+            });
+            
+            // Tablo sonuçlarını da göster
+            displayTableResults();
+        }
+        
+        // Tablo sonuçlarını göster
+        function displayTableResults() {
+            const tableHeader = document.getElementById('resultsTableHeader');
+            const tableBody = document.getElementById('resultsTableBody');
+            
+            tableHeader.innerHTML = '';
+            tableBody.innerHTML = '';
+            
+            const headers = [
+                'Ürün Adı',
+                'Ürün Maliyeti (₺)',
+                'Toplam Maliyet (₺)',
+                'Hedef Kar (%)',
+                'Komisyon (%)',
+                'Ödeme/Hizmet (%)',
+                'Başabaş Fiyat (₺)',
+                'Hedef Fiyat (₺)',
+                'KDV Dahil Fiyat (₺)',
+                'Platform Maliyeti (₺)',
+                'Net Kar (₺)',
+                'Gerçek Kar (%)'
+            ];
+            
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            tableHeader.appendChild(headerRow);
+            
+            calculationResults.forEach(result => {
+                const netKarClass = parseFloat(result.netKar) > 0 ? 'profit-positive' : (parseFloat(result.netKar) < 0 ? 'profit-negative' : 'profit-neutral');
+                const karOraniClass = parseFloat(result.gercekKarOrani) > 0 ? 'profit-positive' : (parseFloat(result.gercekKarOrani) < 0 ? 'profit-negative' : 'profit-neutral');
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="result-highlight">${result.sku}</td>
+                    <td>${result.urunMaliyeti}</td>
+                    <td>${result.toplamMaliyet}</td>
+                    <td>${result.hedefKarOrani}%</td>
+                    <td>${result.komisyonOrani}%</td>
+                    <td>%2,5</td>
+                    <td class="profit-neutral">${result.breakEvenPrice}</td>
+                    <td class="result-highlight">${result.targetPrice}</td>
+                    <td>${result.kdvDahilFiyat}</td>
+                    <td style="color: #e74c3c;">${result.toplamPlatformMaliyeti}</td>
+                    <td class="${netKarClass}">${result.netKar}</td>
+                    <td class="${karOraniClass}">${result.gercekKarOrani}%</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // İstatistikleri hesapla
+        function calculateStats() {
+            const statsContainer = document.getElementById('resultsStats');
+            statsContainer.innerHTML = '';
+            
+            // Ortalama hedef fiyat
+            const avgTargetPrice = calculationResults.reduce((sum, result) => sum + parseFloat(result.targetPrice), 0) / calculationResults.length;
+            
+            // Ortalama başabaş fiyat
+            const avgBreakEvenPrice = calculationResults.reduce((sum, result) => sum + parseFloat(result.breakEvenPrice), 0) / calculationResults.length;
+            
+            // Ortalama kar oranı
+            const avgKarOrani = calculationResults.reduce((sum, result) => sum + parseFloat(result.gercekKarOrani), 0) / calculationResults.length;
+            
+            // Ortalama komisyon oranı
+            const avgKomisyon = calculationResults.reduce((sum, result) => sum + parseFloat(result.komisyonOrani), 0) / calculationResults.length;
+            
+            // Toplam net kar
+            const totalNetKar = calculationResults.reduce((sum, result) => sum + parseFloat(result.netKar), 0);
+            
+            // En yüksek kar oranı
+            const maxKarOrani = Math.max(...calculationResults.map(result => parseFloat(result.gercekKarOrani)));
+            
+            // İstatistik kartları
+            const stats = [
+                { label: 'Toplam Ürün', value: calculationResults.length, icon: 'fas fa-boxes', color: '#3498db' },
+                { label: 'Ort. Hedef Fiyat (₺)', value: avgTargetPrice.toFixed(2), icon: 'fas fa-tag', color: '#2ecc71' },
+                { label: 'Ort. Başabaş Fiyat (₺)', value: avgBreakEvenPrice.toFixed(2), icon: 'fas fa-balance-scale', color: '#f39c12' },
+                { label: 'Ort. Komisyon (%)', value: avgKomisyon.toFixed(2), icon: 'fas fa-handshake', color: '#9b59b6' },
+                { label: 'Toplam Net Kar (₺)', value: totalNetKar.toFixed(2), icon: 'fas fa-money-bill-wave', color: '#27ae60' },
+                { label: 'Ort. Gerçek Kar (%)', value: avgKarOrani.toFixed(2), icon: 'fas fa-chart-line', color: '#e74c3c' }
+            ];
+            
+            stats.forEach(stat => {
+                const statCard = document.createElement('div');
+                statCard.className = 'stat-card';
+                statCard.style.borderLeftColor = stat.color;
+                
+                statCard.innerHTML = `
+                    <div class="stat-value" style="color: ${stat.color}">${stat.value}</div>
+                    <div class="stat-label"><i class="${stat.icon}"></i> ${stat.label}</div>
+                `;
+                
+                statsContainer.appendChild(statCard);
+            });
+        }
+        
+        // Excel'e aktar
+        function exportToExcel() {
+            if (calculationResults.length === 0) {
+                alert("Aktarılacak veri bulunamadı!");
+                return;
+            }
+            
+            const ws = XLSX.utils.json_to_sheet(calculationResults.map(result => ({
+                'Ürün Adı': result.sku,
+                'Ürün Maliyeti (₺)': parseFloat(result.urunMaliyeti),
+                'Reklam Maliyeti (₺)': parseFloat(result.reklamMaliyeti),
+                'Kargo Maliyeti (₺)': parseFloat(result.kargoMaliyeti),
+                'Toplam Maliyet (₺)': parseFloat(result.toplamMaliyet),
+                'Hedef Kar Oranı (%)': parseFloat(result.hedefKarOrani),
+                'Hedef Kar Miktarı (₺)': parseFloat(result.hedefKarMiktari),
+                'Komisyon Oranı (%)': parseFloat(result.komisyonOrani),
+                'Ödeme/Hizmet Ücreti (%)': parseFloat(result.odemeHizmetOrani),
+                'Başabaş Fiyat (₺)': parseFloat(result.breakEvenPrice),
+                'Hedef Satış Fiyatı (₺)': parseFloat(result.targetPrice),
+                'KDV Dahil Fiyat (₺)': parseFloat(result.kdvDahilFiyat),
+                'Platform Komisyon (₺)': parseFloat(result.platformKomisyon),
+                'Ödeme Hizmet (₺)': parseFloat(result.odemeHizmet),
+                'Platform Sabit Ücret (₺)': parseFloat(result.platformSabitUcret),
+                'Toplam Platform Maliyeti (₺)': parseFloat(result.toplamPlatformMaliyeti),
+                'Net Kar (₺)': parseFloat(result.netKar),
+                'Gerçek Kar Oranı (%)': parseFloat(result.gercekKarOrani),
+                'KDV Oranı (%)': parseFloat(result.kdvOrani)
+            })));
+            
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Kar Hedefli Fiyat Hesaplama");
+            
+            const platformName = selectedPlatform ? selectedPlatform.name.replace(/\s+/g, '-') : 'Pazar-Yeri';
+            XLSX.writeFile(wb, `${platformName}-kar-hedefli-fiyat-${new Date().toISOString().split('T')[0]}.xlsx`);
+            
+            alert("Excel dosyası indiriliyor...");
+        }
+        
+        // CSV'ye aktar
+        function exportToCSV() {
+            if (calculationResults.length === 0) {
+                alert("Aktarılacak veri bulunamadı!");
+                return;
+            }
+            
+            const headers = [
+                'Ürün Adı', 'Ürün Maliyeti (₺)', 'Reklam Maliyeti (₺)', 'Kargo Maliyeti (₺)', 'Toplam Maliyet (₺)',
+                'Hedef Kar Oranı (%)', 'Hedef Kar Miktarı (₺)', 'Komisyon Oranı (%)', 'Ödeme/Hizmet Ücreti (%)',
+                'Başabaş Fiyat (₺)', 'Hedef Satış Fiyatı (₺)', 'KDV Dahil Fiyat (₺)', 'Platform Komisyon (₺)', 
+                'Ödeme Hizmet (₺)', 'Platform Sabit Ücret (₺)', 'Toplam Platform Maliyeti (₺)', 'Net Kar (₺)', 
+                'Gerçek Kar Oranı (%)', 'KDV Oranı (%)'
+            ];
+            
+            let csvContent = headers.join(';') + '\n';
+            
+            calculationResults.forEach(result => {
+                const row = [
+                    result.sku,
+                    result.urunMaliyeti,
+                    result.reklamMaliyeti,
+                    result.kargoMaliyeti,
+                    result.toplamMaliyet,
+                    result.hedefKarOrani,
+                    result.hedefKarMiktari,
+                    result.komisyonOrani,
+                    result.odemeHizmetOrani,
+                    result.breakEvenPrice,
+                    result.targetPrice,
+                    result.kdvDahilFiyat,
+                    result.platformKomisyon,
+                    result.odemeHizmet,
+                    result.platformSabitUcret,
+                    result.toplamPlatformMaliyeti,
+                    result.netKar,
+                    result.gercekKarOrani,
+                    result.kdvOrani
+                ].join(';');
+                
+                csvContent += row + '\n';
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            const platformName = selectedPlatform ? selectedPlatform.name.replace(/\s+/g, '-') : 'Pazar-Yeri';
+            link.setAttribute('download', `${platformName}-kar-hedefli-fiyat-${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert("CSV dosyası indiriliyor...");
+        }
+        
+        // Manuel girişe aktar
+        function addToManualInput() {
+            if (excelData.length === 0) {
+                alert("Aktarılacak veri bulunamadı!");
+                return;
+            }
+            
+            switchTab('manual-tab');
+            clearManualProducts();
+            
+            const productsToAdd = excelData.slice(0, 5);
+            
+            productsToAdd.forEach(row => {
+                const product = getProductFromRow(row);
+                addManualProduct(product);
+            });
+            
+            alert("İlk 5 ürün manuel girişe aktarıldı!");
+        }
+        
+        // Örnek verileri yükle
+        function loadExampleData() {
+            if (!selectedPlatform) {
+                alert('Lütfen önce bir platform seçin!');
+                switchTab('platform-tab');
+                return;
+            }
+            
+            switchTab('manual-tab');
+            clearManualProducts();
+            
+            const exampleProducts = [
+                {
+                    sku: "STL-001 Stiletto",
+                    urunMaliyeti: 380,
+                    hedefKarOrani: 30,
+                    komisyonOrani: 15,
+                    reklamMaliyeti: 25,
+                    kuponIndirimi: 20,
+                    kampanyaIndirimi: 10,
+                    kampanyaIndirimiTip: 'tl',
+                    indirim: 5,
+                    kargoMaliyeti: 69.9,
+                    kdvOrani: 20
+                },
+                {
+                    sku: "CF289A Toner",
+                    urunMaliyeti: 1450,
+                    hedefKarOrani: 20,
+                    komisyonOrani: 12,
+                    reklamMaliyeti: 35,
+                    kuponIndirimi: 50,
+                    kampanyaIndirimi: 5,
+                    kampanyaIndirimiTip: 'yuzde',
+                    indirim: 0,
+                    kargoMaliyeti: 79.9,
+                    kdvOrani: 20
+                },
+                {
+                    sku: "SM-Phone-X",
+                    urunMaliyeti: 8500,
+                    hedefKarOrani: 15,
+                    komisyonOrani: 10,
+                    reklamMaliyeti: 100,
+                    kuponIndirimi: 100,
+                    kampanyaIndirimi: 3,
+                    kampanyaIndirimiTip: 'yuzde',
+                    indirim: 0,
+                    kargoMaliyeti: 49.9,
+                    kdvOrani: 20
+                }
+            ];
+            
+            exampleProducts.forEach(product => {
+                addManualProduct(product);
+            });
+            
+            alert("Örnek veriler yüklendi!");
+        }
+        
+        // Manuel ürünleri temizle
+        function clearManualProducts() {
+            manualProducts = [];
+            document.getElementById('manualProductsContainer').innerHTML = '';
+        }
+        
+        // Dosyayı temizle
+        function clearFile() {
+            document.getElementById('excelFile').value = '';
+            document.getElementById('selectedFileInfo').style.display = 'none';
+            document.getElementById('uploadArea').style.borderColor = '#3498db';
+            document.getElementById('uploadArea').style.backgroundColor = '#f8fafc';
+            document.getElementById('columnMappingSection').style.display = 'none';
+            document.getElementById('dataPreview').style.display = 'none';
+            
+            excelData = [];
+            excelColumns = [];
+            currentMapping = {};
+        }
+        
+        // Sekmeleri değiştir
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelector(`button[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            
+            if (tabId !== 'platform-tab' && !selectedPlatform) {
+                alert('Lütfen önce bir platform seçin!');
+                switchTab('platform-tab');
+                return;
+            }
+        }
+        
+        // Yazdır
+        function printResults() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
